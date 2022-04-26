@@ -64,11 +64,6 @@ class Station
      */
     private $constructeur;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ValeursCumulees::class, mappedBy="station")
-     */
-    private $valeursCumulees;
-
     public function __construct()
     {
         $this->id = Uuid::v4();
@@ -191,33 +186,4 @@ class Station
         return $this;
     }
 
-    /**
-     * @return Collection|ValeursCumulees[]
-     */
-    public function getValeursCumulees(): Collection
-    {
-        return $this->valeursCumulees;
-    }
-
-    public function addValeursCumulee(ValeursCumulees $valeursCumulee): self
-    {
-        if (!$this->valeursCumulees->contains($valeursCumulee)) {
-            $this->valeursCumulees[] = $valeursCumulee;
-            $valeursCumulee->setStation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeValeursCumulee(ValeursCumulees $valeursCumulee): self
-    {
-        if ($this->valeursCumulees->removeElement($valeursCumulee)) {
-            // set the owning side to null (unless already changed)
-            if ($valeursCumulee->getStation() === $this) {
-                $valeursCumulee->setStation(null);
-            }
-        }
-
-        return $this;
-    }
 }
