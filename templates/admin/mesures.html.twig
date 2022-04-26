@@ -1,0 +1,16 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Admin - Mesures{% endblock %}
+
+{% block body %}
+
+
+<div class='container' >
+    <h1>Générer une mesure</h1>
+    {{ form_start(form) }}
+        {{form_widget(form)}}
+        <input type="submit" value="Create">
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top" >
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+            <li class="nav-item">
+                    <a href="{{path('app_home')}}" >Association Vergers/Stations</a>
+            </li>
+            <li class="nav-item">
+                    <a href="{{path('app_stations_list')}}">Stations</a>
+            </li>
+            <li class="nav-item">
+                    <a href="{{path('app_vergers_list')}}">Vergers</a>
+            </li>
+            <li class="nav-item">
+                    <a href="{{path('app_capteurs_list')}}">Capteurs</a>
+            </li>
+            <li class="nav-item">
+                    <a href="{{path('app_mesures_home')}}">Mesures</a>
+            </li>
+        </ul>
+        </div>
+        <div class="text-light">
+                <ul>
+                        <li>
+                                <a href="{{path('app_settings')}}">Paramètres</a>
+                        </li>
+                        <li class="text-light">| </li>
+                        <li class="text-light">
+                                Administration : Alerte Vergers
+                        </li>
+                        
+                </ul>
+               
+        </div>
+    </div>
+</nav>

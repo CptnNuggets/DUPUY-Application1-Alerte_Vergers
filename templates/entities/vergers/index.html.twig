@@ -1,0 +1,55 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Vergers{% endblock %}
+
+{% block body %}
+
+
+
+<div class='container' >
+    <div class='text-center'>
+        <h1>Affichage des Vergers</h1>
+    </div>
+    <div>
+        <table id="table_todisplay" class="display">
+            <thead>
+                <tr>
+                    <th>Identifiant du Verger</th>
+                    <th>Contact</th>
+                    <th>Niveau d'alerte</th>
+                    <th></th>
+                    <th></th>
+                    <th>id (DEV)</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for verger in vergers %}
+                <tr>
+                    <td>{{ verger.idVerger }}</td>
+                    <td>{{ verger.contact }}</td>
+                    {% if verger.getMessageAlerte != null %}
+                        <td>{{ verger.getMessageAlerte.getAlerteCode }}</td>
+                    {% else %}
+                        <td></td>>
+                    {% endif %}
+                    <td><a href="{{ path('app_vergers_edit', {id : verger.id}) }}">Modifier</a></td>
+                    <td><a href="{{ path('app_vergers_delete', {id : verger.id}) }}" class="link-danger">Supprimer</a></td>
+                    <td>{{ verger.id }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<div class='container' >
+    <h3>Création d'un verger</h3>
+    {{ form_start(form) }}
+        {{form_widget(form)}}
+        <input type="submit" value="Create">
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+</div>
+
+{% endblock %}

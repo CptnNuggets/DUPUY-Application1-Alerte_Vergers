@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% set pagetitle = ('Modification du capteur : ' ~ capteur.capteurName)  %}
+
+{% block title pagetitle %}
+
+{% block body %}
+
+<div class='container' >
+    <div class='text-center'>
+        <h1>Modification du capteur :</h1>
+        <br>
+        <h4>{{ capteur.capteurName }}</h4>
+    </div>
+</div>
+
+<div class='container w-50 border border-secondary rounded' >
+    {{ form_start(form) }}
+        {{ form_row(form.capteurName, {'label': 'Nom'}) }}
+        {{ form_row(form.unite, {'label': 'Unité'}) }}
+        <div class="text-center">
+            <input type="submit" value="Modifier" class="btn btn-primary">
+        </div>
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+    <br>
+</div>
+{% endblock %}

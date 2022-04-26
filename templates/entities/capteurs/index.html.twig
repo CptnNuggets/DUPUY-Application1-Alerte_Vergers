@@ -1,0 +1,67 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Capteurs{% endblock %}
+
+{% block body %}
+
+<div class = 'container'>
+    <div class='row'>
+        <div class='col-6 align-self-center'>
+            <div class="text-center">
+                <h1>Capteurs paramétrés</h1>
+                <br>
+                <h4>Disponibles pour enregistrer les mesures.</h4>
+            </div>
+        </div>
+        <div class='col-6 border border-secondary rounded'>
+            <h3>Nouveau capteur :</h3>
+            {{ form_start(form) }}
+            <div class='row'>
+                <div class='col'>
+                    {{ form_row(form.capteurName, {'label': 'Nom'}) }}
+                </div>
+                <div class='col'>
+                    {{ form_row(form.unite, {'label': 'Unité'}) }}
+                </div>
+            </div>
+            <div class='row'>
+                <div class="text-center">
+                    <input type="submit" value="Créer" class="btn btn-primary">
+                </div>
+            </div>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+            <br>
+        </div>
+    </div>
+</div>
+
+<div style="height:20px"></div>
+
+<div class='container' >
+    <table id="table_todisplay" class="display">
+        <thead>
+            <tr>
+                <th>Nom du capteur</th>
+                <th>Unité</th>
+                <th></th>
+                <th></th>
+                {# <th>id (DEV)</th> #}
+            </tr>
+        </thead>
+        <tbody>
+        {% for capteur in capteurs %}
+            <tr>
+                <td>{{ capteur.capteurName }}</td>
+                <td>{{ capteur.unite }}</td>
+                <td><a href="{{ path('app_capteurs_edit', {id : capteur.id}) }}">Modifier</a></td>
+                <td><a href="{{ path('app_capteurs_delete', {id : capteur.id}) }}" class="link-danger">Supprimer</a></td>
+                {# <td>{{ capteur.id }}</td> #}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

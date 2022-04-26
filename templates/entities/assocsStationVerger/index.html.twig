@@ -1,0 +1,63 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Association Vergers-Stations{% endblock %}
+
+{% block body %}
+
+<div class = 'container'>
+    <div class='row'>
+        <div class='col-6 align-self-center'>
+            <div class="text-center">
+                <h1>Affectation des vergers</h1>
+                <br>
+                <h1>aux stations météo.</h1>
+            </div>
+        </div>
+        <div class='col-6 border border-secondary rounded'>
+            <h3>Nouvelle association :</h3>
+            {{ form_start(form) }}
+            <div class='row'>
+                <div class='col'>
+                    {{ form_row(form.verger) }}
+                </div>
+                <div class='col'>
+                    {{ form_row(form.station) }}
+                </div>
+            </div>
+            <div class='row'>
+                <div class="text-center">
+                    <input type="submit" value="Créer" class="btn btn-primary">
+                </div>
+            </div>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+            <br>
+        </div>
+    </div>
+</div>
+
+<div style="height:20px"></div>
+
+<div class='container' >
+    <div>
+        <table id="table_todisplay" class="display">
+            <thead>
+                <tr>
+                    <th>Identifiant Verger</th>
+                    <th>Nom de la Station</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for association in associations %}
+                <tr>
+                    <td>{{ association.verger.idVerger }}</td>
+                    <td>{{ association.station.stationName }}</td>
+                    <td><a href="{{ path('app_assocSV_delete', {id : association.id}) }}" class="link-danger">Supprimer</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% set pagetitle = (association.station.stationName ~ ' - Modification du capteur n°' ~ association.NumeroCapteur.numero)  %}
+
+{% block title pagetitle %}
+
+{% block body %}
+
+<div class='container' >
+    <div class='text-center'>
+        <h1>{{ pagetitle }}</h1>
+    </div>
+</div>
+
+<div style="height:20px"></div>
+
+<div class='container w-50 center border border-secondary rounded' >
+    {{ form_start(form) }}
+        {{form_widget(form)}}
+        <div class="text-center">
+            <input type="submit" value="Modifier" class="btn btn-primary">
+        </div>
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+    <br>
+</div>
+{% endblock %}

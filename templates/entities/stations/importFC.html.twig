@@ -1,0 +1,28 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Import d'une configuration FieldClimate depuis l'API{% endblock %}
+
+
+
+
+{% block body %}
+
+<div class='container' >
+    <div class='text-center'>
+        <h1>Nommer la nouvelle station</h1>
+    </div>
+</div>
+
+<div style="height:20px"></div>
+
+<div class='container w-50 center border border-secondary rounded' >
+    {{ form_start(form) }}
+        {{form_widget(form)}}
+        <div class="text-center">
+            <input type="submit" value="Valider l'identification" class="btn btn-primary">
+        </div>
+    {{ form_rest(form) }}
+    {{ form_end(form) }}
+    <br>
+</div>
+{% endblock %}

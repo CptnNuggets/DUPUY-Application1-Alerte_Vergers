@@ -1,0 +1,13 @@
+00000431;iMetos 1; 		-> FC1
+00000438;iMetos 1;		-> FC2
+0000043A;iMetos 1;		-> FC3
+00000AB7;iMetos 1;		-> FC4
+00001A24;iMetos 1;		-> FC5
+00002198;iMetos 1		-> FC5
+000027DB;iMetos 1		-> FC5
+002034E9;iMetos 3.3		-> FC5
+0020424C;iMetos 3.3		-> FC6
+00204C19;iMetos 3.3		-> FC6
+00205143;iMetos 3.3		-> FC7
+01208C67;iMetos ECO D3		-> FC7
+01208C6D;iMetos ECO D3;		-> FC8

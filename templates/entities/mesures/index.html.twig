@@ -1,0 +1,75 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Mesures{% endblock %}
+
+{% block body %}
+
+
+
+{% if listCapteurs is defined %}
+    <div class='container'>
+        <div class='row'>
+            <div class='col-9 align-self-center text-center'>
+                <h1>Dernières mesures : </h1>
+                <h1>{{ station.stationName }}</h1>
+                <h4>Code API : {{ station.stationCode }}</h4>
+            </div>
+            <div class = 'col-3 align-self-center border border-secondary rounded'>
+                {{ form_start(form) }}
+                    {{ form_row(form.station, {'label': 'Station'}) }}
+                    <div class="text-center">
+                        <input type="submit" value="GO !" class="btn btn-secondary">
+                    </div>
+                {{ form_rest(form) }}
+                {{ form_end(form) }}
+                <br>
+            </div>
+        </div>
+    </div>
+    <div style="height:20px"></div>
+    <div class='container' >
+        <div>
+            <table id="measures_todisplay" class="display">
+                <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        {% for numero , capteur in listCapteurs %}
+                            <th>{{ numero }} : {{ capteur.capteurName }} ({{ capteur.unite }})</th>
+                        {% endfor %}
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for date, row in dataSortedByDate %}
+                    <tr>
+                        <td>{{ date }}</td>
+                        {% for numero, capteur in listCapteurs %}
+                            {% if row[numero] is defined %}
+                                <td>{{ row[numero] }}</td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        {% endfor %}
+                        <td><a href="{{ path('app_mesures_delete', {stationId : station.id, dateTime: date} ) }}" class="link-danger">Supprimer</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% else %}
+    <div class='container w-25' >
+        <h1></h1>
+        {{ form_start(form) }}
+            {{form_widget(form)}}
+            <div class="text-center">
+                <input type="submit" value="GO !" class="btn btn-secondary">
+            </div>
+        {{ form_rest(form) }}
+        {{ form_end(form) }}
+    </div>
+{% endif %}
+
+
+{% endblock %}

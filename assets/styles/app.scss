@@ -1,0 +1,96 @@
+$primary: rgb(131, 86, 19);
+$secondary: rgb(80, 95, 77);
+$danger:rgb(138, 13, 13);
+$success: rgb(34, 126, 42);
+$info:rgb(36, 50, 128);
+
+
+@import "~bootstrap/scss/bootstrap";
+
+@import "~datatables.net-dt/css/jquery.dataTables.css";
+
+@import 'shared/variables';
+
+body {
+    background-color: lightgray;
+}
+
+h1 {
+  font-family: $primary-font;
+  color: darkslategray;
+}
+
+
+.table {
+  border: 0px solid black ;
+    tr:nth-child(1){
+      font-weight: bold;
+    }
+    tr:nth-child(even){
+      background-color: white;
+    }
+    
+}
+
+nav {
+
+  background-color: $navbar-color;
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li { 
+      display: inline-block; 
+      color : rgb(26, 26, 26);
+  }
+
+  a {
+    display: block;
+    padding: 6px 12px;
+    text-decoration: none;
+    color : white;
+  
+    &:hover{
+      color: rgb(189, 189, 189);
+    }
+
+  }
+
+}
+
+// .btn-primary {
+  
+//   // font-weight: bold;    
+// }   
+
+// .alpha { color: $purple; }
+// .beta {
+//   color: $yellow-300;
+//   background-color: $indigo-900;
+// }
+
+
+
+// <style>
+.alert {
+    padding : 10px;
+    color : white;
+    text-align: center;
+}
+
+.alert-success {
+    background-color: $success;
+}
+
+.alert-error {
+    background-color: $danger;
+}
+
+.alert-info {
+    background-color: $info;
+}
+// </style>
+  

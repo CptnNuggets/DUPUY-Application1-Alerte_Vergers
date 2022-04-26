@@ -1,0 +1,55 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Admin{% endblock %}
+
+{% block body %}
+
+<div class='container'>
+    <h2>Options admin :</h2>
+    <a href="{{ path('app_admin_mesures') }}">Générer mesures</a>
+
+</div>
+
+<div class='container' >
+    <h1>Numéros de capteur</h1>
+    <div>
+
+        <table id="table_todisplay" class="display">
+            <thead>
+                <tr>
+                    
+                    <th>Numéro de Capteur</th>
+                    <th>id (DEV)</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for numcapteur in numcapteurs %}
+                <tr>
+                    
+                    <td>{{ numcapteur.numero }}</td>
+                    <td>{{ numcapteur.id }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+<div class='container' >
+    <h1>Ajouter un numéro</h1>
+    {{ form_start(formNC) }}
+        {{form_widget(formNC)}}
+        <input type="submit" value="Create">
+    {{ form_end(formNC) }}
+</div>
+
+<div class='container' >
+    <h1>Ajouter un constructeur et une version d'API</h1>
+    {{ form_start(formCons) }}
+        {{form_widget(formCons)}}
+        <input type="submit" value="Create">
+    {{ form_end(formCons) }}
+</div>
+
+{% endblock %}

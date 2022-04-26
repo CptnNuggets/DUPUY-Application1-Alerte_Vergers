@@ -1,0 +1,147 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Paramètres de l'application{% endblock %}
+
+
+
+
+{% block body %}
+
+
+<div class='container' >
+    <div class='row'>
+        <div class='col-6 text-center border border-secondary rounded'>
+            <h1>Capteurs du modèle mathématique</h1>
+            <div class='container' >
+                <div class='row justify-content-md-center'>
+                
+                    {% for shortname, content in form_array %}
+                    <div class='col-6 ' >          
+                            {% if content.capteur is defined %}
+                                <div class='text-center text-muted'>
+                                    <h4><strong>Mesure : {{ content.name }}</strong></h4>
+                                    <br>
+                                    <h4>Capteur : {{ content.capteur.capteur.capteurName }}</h4>
+                                    <br>
+                                </div>
+                                <div class="text-center">
+                                    <a href="{{ path('app_settings_deleteCPM', {id : content.capteur.id}) }}" class="btn btn-danger">Supprimer</a>
+                                </div>
+                            {% elseif content.form is defined %}
+                                <div class="text-center">
+                                    <h4><strong>Mesure : {{ content.name }}</strong></h4>
+                                    <br>
+                                </div>
+                                {{ form_start(content.form) }}
+                                    {{form_row(content.form.capteur)}}
+                                    <div class="text-center">
+                                        <input type="submit" value="Appliquer" class="btn btn-primary">
+                                    </div>
+                                {{ form_rest(content.form) }}
+                                {{ form_end(content.form) }}
+                                <br>
+                            {% else %}
+                                Woops, error !
+                            {% endif %}
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        <div class='col-1'></div>
+        <div class='col-5 border border-secondary rounded'>
+            <h1>Paramétrage des niveaux d'alerte</h1>
+            
+            {{ form_start(alert_form) }}
+
+            <div class='row'>
+                <div class='col'>
+                    {{ form_row(alert_form.alerteLevel, {'label': 'Niveau d\'alerte'}) }}
+                </div>
+                <div class='col align-self-center'>
+                    <div class="text-center">
+                        <input type="submit" value="Créer" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+            {{ form_row(alert_form.alerteMessage, {'label': 'Contenu de l\'alerte'}) }}
+            {{ form_row(alert_form.alerteCode, {'label': 'Code programme'}) }}
+            {{ form_rest(alert_form) }}
+            {{ form_end(alert_form) }}
+        
+        </div>
+    </div>
+</div>
+
+
+<div style="height:30px"></div>
+
+
+
+<div class='container' >
+    <div>
+        <table id="table_todisplay" class="display">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Niveau d'alerte</th>
+                    <th>Message à envoyer</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for message in alert_messages %}
+                <tr>
+                    <td>{{ message.alerteCode }}</td>
+                    <td>{{ message.alerteLevel }}</td>
+                    <td>{{ message.alerteMessage }}</td>
+                    <td><a href="{{ path('app_settings_deleteAlert', {id : message.id}) }}" class="link-danger">Supprimer</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
+{# <div class='container' >
+    <div class='row justify-content-md-center'>
+    
+        {% for shortname, content in form_array %}
+        <div class='col-4 border border-secondary rounded' >          
+                {% if content.capteur is defined %}
+                    <div class='text-center text-muted'>
+                        <h4><strong>Mesure : {{ content.name }}</strong></h4>
+                        <br>
+                        <h4>Capteur : {{ content.capteur.capteur.capteurName }}</h4>
+                        <br>
+                    </div>
+                    <div class="text-center">
+                        <a href="{{ path('app_settings_deleteCPM', {id : content.capteur.id}) }}" class="btn btn-danger">Supprimer</a>
+                    </div>
+                {% elseif content.form is defined %}
+                    <div class="text-center">
+                        <h4><strong>Mesure : {{ content.name }}</strong></h4>
+                        <br>
+                    </div>
+                    {{ form_start(content.form) }}
+                        {{form_row(content.form.capteur)}}
+                        <div class="text-center">
+                            <input type="submit" value="Appliquer" class="btn btn-primary">
+                        </div>
+                    {{ form_rest(content.form) }}
+                    {{ form_end(content.form) }}
+                    <br>
+                {% else %}
+                    Woops, error !
+                {% endif %}
+        </div>
+        {% endfor %}
+
+    </div>
+</div> #}
+
+
+{% endblock %}

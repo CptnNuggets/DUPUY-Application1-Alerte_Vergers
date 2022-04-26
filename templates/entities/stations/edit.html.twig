@@ -1,0 +1,100 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% set pagetitle = ('Modification de la station : ' ~ station.stationName)  %}
+
+{% block title pagetitle %}
+
+{% block body %}
+
+
+
+<div class = 'container'>
+    <div class="text-center">
+        <h1>{{ pagetitle }}</h1>
+    </div>
+    <br>
+    <div class='row'>
+        <div class='col-5 border border-secondary rounded'>            
+            
+
+            {{ form_start(formCapteur) }}
+            <div class='row'>
+                <div class='col-8'>
+                    <h2>Ajout d'un capteur:</h2>
+                </div>
+                <div class='col-4 align-self-center text-center'>
+                    <input type="submit" value="Ajouter" class="btn btn-primary">
+                </div>
+            </div>
+            
+            
+                {{form_widget(formCapteur)}}
+            {{ form_rest(formCapteur) }}
+            {{ form_end(formCapteur) }}
+        </div>
+        <div class='col-1'></div>
+        <div class='col-6 border border-secondary rounded'>
+            <h2>Modification des informations:</h2>
+            {{ form_start(formStation) }}
+            <div class='row'>
+                <div class='col'>
+                    {{ form_row(formStation.stationName, {'label': 'Nom'}) }}
+                </div>
+                <div class='col'>
+                    {{ form_row(formStation.stationCode, {'label': 'Code API'}) }}
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col'>
+                    
+                    {{ form_row(formStation.constructeur, {'label': 'Constructeur'}) }}
+
+                </div>
+                <div class='col align-self-center'>
+                    <div class="text-center">
+                        <input type="submit" value="Mettre à jour" class="btn btn-primary">
+                    </div>
+                    
+                </div>
+            </div>
+            {{ form_rest(formStation) }}
+            {{ form_end(formStation) }}
+        </div>
+    </div>
+</div>
+
+
+<div class='container' >
+    <br>
+    <h2>Capteurs présents :</h2>
+    <table id="table_todisplay" class="display">
+        <thead>
+            <tr>
+                <th>N° Capteur</th>
+                <th>Capteur (Unité)</th>
+                <th>Code côte station</th>
+                <th></th>
+                <th></th>
+                {# <th>id Num Capteur (DEV)</th>
+                <th>id Association (DEV)</th>
+                <th>N° du modèle de Station (DEV)</th> #}
+            </tr>
+        </thead>
+        <tbody>
+        {% for association in associations %}
+            <tr>
+                <td>{{ association.NumeroCapteur.numero }}</td>
+                <td>{{ association.capteur.capteurName }} ({{ association.capteur.unite }})</td>
+                <td>{{ association.codeCapteur }}</td>
+                <td><a href="{{ path('app_stations_editCapteur', {id : association.id}) }}">Modifier</a></td>
+                <td><a href="{{ path('app_stations_deleteCapteur', {id : association.id}) }}" class="link-danger">Supprimer</a></td>
+                {# <td>{{ association.NumeroCapteur.id }}</td>
+                <td>{{ association.id }}</td>
+                <td>{{ association.station.stationCode }}</td> #}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'layouts/base.html.twig' %}
+
+{% block title %}Stations météo{% endblock %}
+
+{% block body %}
+
+<div class = 'container'>
+    <div class='row'>
+        <div class='col-6 align-self-center'>
+            <div class="text-center">
+                <h1>Stations météo</h1>
+            </div>
+            
+            <br>
+            <div class="text-center">
+                <a href="{{ path('app_stations_addFieldClimate') }}" class="btn btn-secondary">Configurer une nouvelle station FieldClimate</a>
+            </div>
+        </div>
+        <div class='col-6 border border-secondary rounded'>
+        <h3>Nouvelle station (configuration manuelle)</h1>
+            {{ form_start(form) }}
+            <div class='row'>
+                <div class='col'>
+                    {{ form_row(form.stationName, {'label': 'Nom'}) }}
+                </div>
+                <div class='col'>
+                    {{ form_row(form.stationCode, {'label': 'Code API'}) }}
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col'>
+                    
+                    {{ form_row(form.constructeur, {'label': 'Constructeur'}) }}
+
+                </div>
+                <div class='col align-self-center'>
+                    <div class="text-center">
+                        <input type="submit" value="Créer" class="btn btn-primary">
+                    </div>
+                </div>
+            </div>
+            {{ form_rest(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+
+<div style="height:20px"></div>
+
+<div class='container' >
+    <table id="table_todisplay" class="display">
+        <thead>
+            <tr>
+                <th>Nom de la station</th>
+                <th>Code</th>
+                <th>Constructeur</th>
+                <th></th>
+                <th></th>
+                {# <th>id (DEV)</th> #}
+            </tr>
+        </thead>
+        <tbody>
+        {% for station in stations %}
+            <tr>
+                <td>{{ station.getStationName }}</td>
+                <td>{{ station.stationCode }}</td>
+                {% if station.getConstructeur is not null %}
+                    <td>{{ station.getConstructeur.constructeurName }}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                <td><a href="{{ path('app_stations_edit', {id : station.id}) }}">Modifier</a></td>
+                <td><a href="{{ path('app_stations_delete', {id : station.id}) }}" class="link-danger">Supprimer</a></td>
+                {# <td>{{ station.getId }}</td> #}
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}
