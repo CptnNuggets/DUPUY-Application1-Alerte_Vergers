@@ -78,6 +78,21 @@ class FieldClimateRequests
         return $content;
     }
 
+
+    // Verifies if the station exists
+    public function doesStationExist($publicKey, $privateKey, $stationIdentifier): bool
+    {
+        $stationsArray = $this->pullStations($publicKey, $privateKey);
+        $verif = false;
+        foreach ($stationsArray as $station){
+            if ($station["name"]["original"] == $stationIdentifier){
+                $verif = true;
+                break;
+            }
+        }
+        return $verif;
+    }
+
     // returns the request to get data from a station, 
     // provided its identifier code and the number of last hours requested
     public function pullData($publicKey, $privateKey, $stationIdentifier, $hours): array

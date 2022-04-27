@@ -104,6 +104,7 @@ class StationController extends AbstractController
         $formStation = $this->createForm(StationType::class, $station);
         $formStation->handleRequest($request);
         if ($formStation->isSubmitted() && $formStation->isValid()){
+
             $em->flush();
 
             $this->addFlash('success','La station '.$station->getStationName().' a été modifiée !');
@@ -201,23 +202,31 @@ class StationController extends AbstractController
             $publicKey=$this->getParameter('api_fieldclimate_public_key');
             $privateKey=$this->getParameter('api_fieldclimate_private_key');
 
-            // Pulls the sensors for that station from the API
-            $sensors = $fieldClimateRequest->pullStationSensors($publicKey, $privateKey, $stationCode);
+            $verif=$fieldClimateRequest->doesStationExist($publicKey, $privateKey, $stationCode);
 
-            if ($sensors != null){
+            if ($verif == true){
+                // Pulls the sensors for that station from the API
+                $sensors = $fieldClimateRequest->pullStationSensors($publicKey, $privateKey, $stationCode);
 
-                // Array containing the sensors, passed as an array into the DB as parameter of the station
-                $station->setListeCapteurs($sensors);
+                if ($sensors != null){
 
-                // Persistence of the station inside the DB
-                $em->persist($station);
-                $em->flush();
-                $id=$station->getId();
+                    // Array containing the sensors, passed as an array into the DB as parameter of the station
+                    $station->setListeCapteurs($sensors);
 
-                $this->addFlash('success','Station '.$station->getStationName().' créée avec le code API '.$station->getStationCode().', configurez ses capteurs.');
+                    // Persistence of the station inside the DB
+                    $em->persist($station);
+                    $em->flush();
+                    $id=$station->getId();
 
-                return $this->redirectToRoute('app_stations_addFieldClimate_sensors', compact('id'));
+                    $this->addFlash('success','Station '.$station->getStationName().' créée avec le code API '.$station->getStationCode().', configurez ses capteurs.');
+
+                    return $this->redirectToRoute('app_stations_addFieldClimate_sensors', compact('id'));
+                }
+            } else {
+                $this->addFlash('error','Ce code station n\'existe pas');
             }
+
+            
             
 
         }
