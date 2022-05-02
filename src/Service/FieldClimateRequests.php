@@ -6,6 +6,7 @@ use DateTime;
 use App\Repository\StationRepository;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use App\Service\StoreDataService;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 // service containing all functions specific to the Fieldclimate stations API
@@ -20,13 +21,17 @@ class FieldClimateRequests
 
     private $stationRepo;
 
+    private $logger;
+
+
     public function __construct(HttpClientInterface $client, StoreDataService $storageManager,
-        ContainerInterface $container, StationRepository $stationRepo)
+        ContainerInterface $container, StationRepository $stationRepo, LoggerInterface $personalLogger)
     {
         $this->client = $client;
         $this->storageManager = $storageManager;
         $this->container = $container;
         $this->stationRepo = $stationRepo;
+        $this->logger = $personalLogger;
     }
     
     // Takes an API request and the private/public keys as argument,
@@ -74,6 +79,8 @@ class FieldClimateRequests
         $request = '/user/stations';
 
         $content = $this->makeRequest($publicKey, $privateKey, $request);
+
+        // $this->logger->info('catched my logger !');
         
         return $content;
     }
@@ -325,10 +332,20 @@ class FieldClimateRequests
     // function to automaticaly store data in everey station registered in the DB
     public function autoStoreMissingData()
     {
+        $this->logger->info('auto storage function called');
         $stations = $this->stationRepo->findAll();
         foreach ($stations as $station) {
             $stationIdentifier = $station->getStationCode();
-            if ( $stationIdentifier != null){
+
+            
+            $this->logger->info('Tries to store data for station code : '.$stationIdentifier);
+
+
+                // NEW CODE
+            $publicKey=$this->container->getParameter('api_fieldclimate_public_key');
+            $privateKey=$this->container->getParameter('api_fieldclimate_private_key');
+            $verif = $this->doesStationExist($publicKey, $privateKey, $stationIdentifier);
+            if ( $verif == true){
                 try{
                     if ($station->getConstructeur()->getConstructeurName() == 'FieldClimate'){
                         $this->pullAndStoreMissingData($stationIdentifier);
@@ -337,7 +354,19 @@ class FieldClimateRequests
                 finally{
 
                 }
+            } else {
+                $this->logger->error('The station '.$station->getStationName().' has a non existant API Code');
             }
+            // if ( $stationIdentifier != null){
+            //     try{
+            //         if ($station->getConstructeur()->getConstructeurName() == 'FieldClimate'){
+            //             $this->pullAndStoreMissingData($stationIdentifier);
+            //         }
+            //     }
+            //     finally{
+
+            //     }
+            // }
         }
         return true;
     }

@@ -352,9 +352,11 @@ class AdminController extends AbstractController
     public function adminDebugStorage(DataManipulation $dataManip, MailerAlert $mailerAlert,
         StationRepository $stationRepo, MesureRepository $mesureRepo, FieldClimateRequests $fC) : Response
     {
-        $stationCode='00000AB7';
+        // $stationCode='00000AB7';
 
-        $fC->pullAndStoreMissingData($stationCode);
+        // $fC->pullAndStoreMissingData($stationCode);
+
+        $fC->autoStoreMissingData();
 
 
         return $this->render('layouts/base.html.twig');

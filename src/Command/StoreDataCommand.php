@@ -38,6 +38,8 @@ class StoreDataCommand extends Command
             'Command done !',
         ]);
         sleep(5);
+
+        return 1;
                 
     }
 }

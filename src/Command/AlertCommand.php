@@ -38,5 +38,7 @@ class AlertCommand extends Command
             'Command done !',
         ]);
         sleep(5);
+
+        return 1;
     }
 }
