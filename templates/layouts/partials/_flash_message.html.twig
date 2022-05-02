@@ -1,27 +1,4 @@
 
-
-
-{# <style>
-    .alert {
-        padding : 10px;
-        color : white;
-        text-align: center;
-    }
-
-    .alert-success {
-        background-color: green;
-    }
-
-    .alert-error {
-        background-color: red;
-    }
-
-    .alert-info {
-        background-color: blue;
-    }
-</style> #}
-
-
 {% for type, messages in app.flashes %}
     {% for message in messages %}
     <div class="alert alert-{{ type }}" role="alert">

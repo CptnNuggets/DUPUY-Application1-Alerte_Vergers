@@ -7,12 +7,15 @@ use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 
+    // Service used to SEND EMAILS
+
 class MailerAlert
 {
+        // Mailer Interface 
     private $mailer;
-
+        // Data Manipulation Service
     private $dataManip;
-
+        // Repository for the alert Levels
     private $alertRepo;
     
     public function __construct(MailerInterface $mailer, DataManipulation $dataManip, MessageAlerteRepository $alertRepo)
@@ -27,8 +30,10 @@ class MailerAlert
 
     public function sendAlertEmails(){
  
+            // Returns an array of [ verger_id => vergerName, contact, riskCode]
         $vergersAndRisks = $this->dataManip->determineActiveAlertLevels();
-
+        
+            // returns an ARRAY containing [ alertCode => alertMessage ]
         $messagesArray = $this->getAlertMessages();
 
         foreach ($vergersAndRisks as $vergerId => $array){
@@ -36,8 +41,6 @@ class MailerAlert
             $messageSubject = "Alerte au verger : " . $array["vergerName"];
             $this->sendEmail($array["contact"], $messageSubject, $messageContent);
         }
-        //     // ONLY FOR TESTING !!!!!
-        // dd($vergersAndRisks);
     }
 
 
@@ -49,9 +52,7 @@ class MailerAlert
         $email = (new Email())
             ->from('alerte.vergers@vasnanciaco.com')
             ->to($address)
-            // ->subject('Red Alert !')
             ->subject($subject)
-            // ->text('Be careful ! A disease may be ravaging your trees, time to handle that !')
             ->text($content)
             ->html($content);
 

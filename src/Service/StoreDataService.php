@@ -8,16 +8,17 @@ use App\Repository\StationRepository;
 use App\Repository\MesureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-// General service containing the necessary functions to store mesures in the database
+    // General service containing the necessary functions to STORE MESURES in the DATABASE
+
 class StoreDataService
 {
-    // Entity Manager
+        // Entity Manager
     private $em;
-    // Repository of the stations
+        // Repository of the stations
     private $stationRepo;
-    // Repository for the mesures
+        // Repository for the mesures
     private $mesureRepo;
-    // Repository for the association between capteur and station
+        // Repository for the association between capteur and station
     private $aCSRepo;
 
     public function __construct(EntityManagerInterface $em, StationRepository $stationRepo, 
@@ -31,33 +32,30 @@ class StoreDataService
 
 
 
-    // Function to store a mesure inside the database, arguments needed :
+    // Function to STORE A MESURE inside the database, arguments needed :
+
         // The mesure value (float)
         // the station API code (string)
         // the sensor API code (string)
         // the date-time of the mesure, rounded to the hour (datetime Y-m-d H:i:s)
+
     public function persistMesure ($valeur, $stationCode, $codeCapteur, $dateTime)
     {
         
         $station = $this->stationRepo->findOneBy(['stationCode' => $stationCode]);
-        // $numeroCapteur = $this->aCSRepo->findOneBy(['station' => $station, 'codeCapteur' => $codeCapteur])->getNumeroCapteur();
         $aCS = $this->aCSRepo->findOneBy(['station' => $station, 'codeCapteur' => $codeCapteur]);
 
-        // VERIFICATION THAT THE MESURE HAS NOT BEEN ALREADY ENTERED
+            // VERIFICATION that the MESURE is NOT ALLREADY in the db
         $existsAllready = $this->mesureRepo->findOneBy([
-            // 'station' => $station,
-            // 'numeroCapteur' => $numeroCapteur,
             'assocCapteurStation' => $aCS,
             'dateTime' => $dateTime
         ]);
 
-        // MESURE ENTERED IN THE DB IF IT DOESNT EXISTS ALLREADY
+            // STORES the mesure if it DOESNT EXIST ALLREADY
         if ($existsAllready == null){
             $mesure = new Mesure;
             $mesure->setValeur($valeur);
             $mesure->setAssocCapteurStation($aCS);
-            // $mesure->setStation($station);
-            // $mesure->setNumeroCapteur($numeroCapteur);
             $mesure->setDateTime($dateTime);
 
             $this->em->persist($mesure);
@@ -68,7 +66,8 @@ class StoreDataService
 
 
 
-    // Function to verify the last dateTime for mesures related to a station existing in the database
+        // Function to verify the LAST DATETIME for mesures related to a station existing in the database
+
     public function getLastDateTimeInDB ($stationCode)
     {
         $station = $this->stationRepo->findOneBy(['stationCode' => $stationCode]);

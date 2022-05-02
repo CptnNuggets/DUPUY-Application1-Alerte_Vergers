@@ -5,27 +5,39 @@ namespace App\Service;
 use App\Repository\CapteurPourMathsRepository;
 use App\Repository\MesureRepository;
 use App\Repository\StationRepository;
+use Psr\Log\LoggerInterface;
+
+    // Service used for MANIPULATING THE MATH MODEL
 
 class DataManipulation
 {
+        // Repository for Mesures
     private $mesureRepo;
+        // Repository for Stations
     private $stationRepo;
+        // Repository for Capteurs pour Maths
     private $cpmRepo;
+        // Logger Interface outputting in a personal logger
+    private $logger;
 
 
 
     public function __construct(
-        MesureRepository $mesureRepo, StationRepository $stationRepo, CapteurPourMathsRepository $cpmRepo
+        MesureRepository $mesureRepo, StationRepository $stationRepo, CapteurPourMathsRepository $cpmRepo, LoggerInterface $personalLogger
         )
     {
         $this->mesureRepo = $mesureRepo;
         $this->stationRepo = $stationRepo;
         $this->cpmRepo = $cpmRepo;
+        $this->logger = $personalLogger;
     }
 
-    // FUNCTION FOR PULLING MESURES FROM THE DB FOR ALL SENSORS OF A STATION,
+
+
+    // function for PULLING MESURES from the db for all SENSORS OF A STATION,
         // Arguments :  Station Api Code, Number of hours of mesure requested
         // Returns an array presenting :    [sensor name] => [ [dateTime] => value ]
+
     public function getDataFromDB($stationIdentifier, $hours)
     {
         $station = $this->stationRepo->findOneBy(['stationCode' => $stationIdentifier]);
@@ -33,18 +45,16 @@ class DataManipulation
         $capteurs=[];
         foreach ($station->getAssocCapteurStations() as $assoc){
             $capteurName = $assoc->getCapteur()->getCapteurName();
-            // $numeroCapteur = $assoc->getNumeroCapteur();    
             
-            // Calls a personal function from the Mesures Repository
-            // Giving the $hours last mesures for a given $station and $numeroCapteur
+                // Calls a personal function from the Mesures Repository
+                // Giving the $hours last mesures for a given $station and $numeroCapteur
             $mesures = $this->mesureRepo->findByStationAndCapteur($assoc, $hours);
 
             foreach ($mesures as $mesure) {
                 $dateTime = $mesure->getDateTime()->format('Y-m-d H:i:s');
                 $capteurs[$capteurName][$dateTime] = $mesure->getValeur();
             }
-            //     // Sorts each array by decreasing key (inverse of ksort) : decreasing date/time
-            // krsort($capteurs[$capteurName]);
+
                 // Sorts by increasing dateTime
             ksort($capteurs[$capteurName]);
         }
@@ -53,51 +63,55 @@ class DataManipulation
     }
 
 
-    // FUNCTION FOR PULLING THE MATH MODEL MESURES FROM THE DB FOR A STATION,
-        // Arguments :  Station Api Code, Number of hours of mesure requested
-        // Returns an array presenting :    [sensor name] => [ [dateTime] => value ]
-        public function getMathDataFromDB($stationIdentifier, $hours)
-        {
-            $station = $this->stationRepo->findOneBy(['stationCode' => $stationIdentifier]);
-    
-            $airTemperatureCapteur = $this->cpmRepo->findOneBy(['nomRaccourci' => 'tempAir'])->getCapteur();
-            $humectationCapteur = $this->cpmRepo->findOneBy(['nomRaccourci' => 'humec'])->getCapteur();
+        // function for PULLING THE MATH MODEL MESURES from the DB for a station
+            // Arguments :  Station Api Code, Number of hours of mesure requested
+            // Returns an array presenting :    [sensor name] => [ [dateTime] => value ]
+    public function getMathDataFromDB($stationIdentifier, $hours)
+    {
+        $station = $this->stationRepo->findOneBy(['stationCode' => $stationIdentifier]);
 
-            $airTemperatureName = $airTemperatureCapteur->getCapteurName();
-            $humectationName = $humectationCapteur->getCapteurName();
+        $airTemperatureCapteur = $this->cpmRepo->findOneBy(['nomRaccourci' => 'tempAir'])->getCapteur();
+        $humectationCapteur = $this->cpmRepo->findOneBy(['nomRaccourci' => 'humec'])->getCapteur();
 
-            $capteurs=[];
-            foreach ($station->getAssocCapteurStations() as $assoc){
-                $capteur = $assoc->getCapteur();
-                if ($capteur == $airTemperatureCapteur || $capteur == $humectationCapteur){
-                    $mesures = $this->mesureRepo->findByStationAndCapteur($assoc, $hours);
-                    foreach ($mesures as $mesure) {
-                        $dateTime = $mesure->getDateTime()->format('Y-m-d H:i:s');
-                        $capteurs[$capteur->getCapteurName()][$dateTime] = $mesure->getValeur();
-                    }
-                    ksort($capteurs[$capteur->getCapteurName()]);
+        $airTemperatureName = $airTemperatureCapteur->getCapteurName();
+        $humectationName = $humectationCapteur->getCapteurName();
+
+        $capteurs=[];
+        foreach ($station->getAssocCapteurStations() as $assoc){
+            $capteur = $assoc->getCapteur();
+            if ($capteur == $airTemperatureCapteur || $capteur == $humectationCapteur){
+                $mesures = $this->mesureRepo->findByStationAndCapteur($assoc, $hours);
+                foreach ($mesures as $mesure) {
+                    $dateTime = $mesure->getDateTime()->format('Y-m-d H:i:s');
+                    $capteurs[$capteur->getCapteurName()][$dateTime] = $mesure->getValeur();
                 }
+                ksort($capteurs[$capteur->getCapteurName()]);
             }
-                // Returns mesures ONLY if both usefull sensors are present
-            if (array_key_exists($humectationName, $capteurs) && array_key_exists($airTemperatureName, $capteurs) ){
-                return($capteurs); 
-            } else {
-                    // otherwise returns NULL
-                return null;
-            }
-                        
         }
+            // Returns mesures ONLY if both usefull sensors are present
+        if (array_key_exists($humectationName, $capteurs) && array_key_exists($airTemperatureName, $capteurs) ){
+            return($capteurs); 
+        } else {
+                // otherwise returns NULL
+            return null;
+        }
+                    
+    }
 
 
 
 
 
-    // function that compares data to the math model
-    // and determines the alert level
-        // Returns an array of [ verger_id => vergerName, contact, riskCode]
-        // Containing the alerts to broadcast
+        //                      ***
+        //     /!\    CURRENTLY IN TESTING MODE     /!\
+        //                      ***
+
+        // function that COMPARES DATA to the MATHEMATICAL MODEL and determines the ALERT LEVEL
+            // Returns an array of [ verger_id => vergerName, contact, riskCode]
+            // Containing the alerts to broadcast
 
     public function determineActiveAlertLevels (){
+            // Array to return
         $alerts=[];
 
         $stations = $this->stationRepo->findAll();
@@ -108,22 +122,12 @@ class DataManipulation
         $airTemperatureName = $airTemperatureCapteur->getCapteurName();
         $humectationName = $humectationCapteur->getCapteurName();
 
-        // dd($humectationName);
 
-        //    /!\   FOREACH REMOVED FOR TESTING, TO PUT BACK     /!\
-        // 
         foreach ($stations as $station){
 
-
-            // TO REMOVE WHEN FOREACH AGAIN IN PLACE
-            // $station = $this->stationRepo->findOneBy(['stationCode' => '00000AB7']);
-            
-
-            
-            $vergersAndRisks = [];
-
-            // Array of vergers infos organised as follow:
+                // Array of vergers infos related to this station organised as follow:
                 // [id (uuid)] => ["alertCode"], ["contact"], ["vergerName"]
+            $vergersAndRisks = [];            
             
             $assosVergers = $station->getAssocStationVergers();
             foreach ($assosVergers  as $asso){
@@ -135,16 +139,15 @@ class DataManipulation
                 $vergersAndRisks[$asso->getVerger()->getId()->__toString()]["vergerName"] = $vergerName;
             }
 
-            // dd($vergersAndRisks);
-
 
 
             // //      /!\               /!\
-            // // REAL WAY TO OBTAIN THE MESURES : UNCOMMENT FOREACH ABOVE
+            // // REAL WAY TO OBTAIN THE MESURES : UNCOMMENT 
             // $stationCode = $station->getStationCode();
             // $mesuresH = $this->getMathDataFromDB($stationCode, 4);
             
             
+
             
             //    /!\               /!\
             // TESTING MESURES : TO COMMENT IF REAL MESURES ARE TO BE USED
@@ -154,54 +157,54 @@ class DataManipulation
                         // "medium humec low temp"
                         // "medium humec high temp"
                         // "high humec high temp"
-                        // "worse case"
+                        // "worse case"    
             $case = "medium humec low temp";
             $mesuresH = $this->getTestingMesures($airTemperatureName, $humectationName, 4, $case);
 
 
-            // dd($mesuresH);
+            
+
 
                 // the usefull sensors are present
             if ($mesuresH != null){
-                // dd("true");
                     // Condition to verify for alerting (humectation != 0 in the last 4 hours)
                     
-                    // POLYNOMES DE HORNER -> A REGARDER ET NOTER POUR L'APPLI FINALE
-
-                        // Humectation cumulée sur les 4 dernières heuers
+                    // Cumulative Humectation on the last 4 hours
                     $H = 0;
                     foreach ($mesuresH[$humectationName] as $humectation){
                         $H += $humectation;
                     }
-                    // dd($H);
+                    
                 if ($H != 0) {
                     // POTENTIAL RISK
                     // DETERMINES THE SECOND RELEVANT MESURE
-                        // Température de l'air cumulée sur les 6 dernières heures
+                        // Cumulative air Temperature on the last 6 hours
                     $T = 0;
+
+
+
+
                     // //      /!\               /!\
-                    // // REAL WAY TO OBTAIN THE MESURES
+                    // // REAL WAY TO OBTAIN THE MESURES : UNCOMMENT
                     // $mesuresT = $this->getMathDataFromDB($stationCode, 6);
                     
                     
                     
                     //    /!\               /!\
-                    // TESTING MESURES : LOW HUMECTATION
+                    // TESTING MESURES : TO COMMENT IN REAL CONDITIONS
                     $mesuresT = $this->getTestingMesures($airTemperatureName, $humectationName, 6, $case);
+
+
                     foreach($mesuresT[$airTemperatureName] as $temperature){
                         $T += $temperature;
                     }
 
-                    // dd($T);
-
-                    // DETERMINES the LOW, MEDIUM and HIGH RISK AREAS based on the TEMPERATURE
-
+                        // DETERMINES the LOW, MEDIUM and HIGH RISK AREAS based on the TEMPERATURE
                     $lowRisk = 0.67*$T + 12.34;
                     $mediumRisk = 0.058*$T**2 - 0.12*$T + 6.78;
                     $highRisk = 0.0034*$T**3 - 0.009*$T**2 + 0.23*$T;
 
-                    // dd($H, $lowRisk, $mediumRisk, $highRisk);
-
+                        // ADDS the Verger, Risk Level and Contact to the RETURNED ARRAY if the risk level is above the desired level for that verger
                     foreach ($vergersAndRisks as $id => $array){
                         if ($H > $highRisk){
                             $alerts[$id]["vergerName"] = $array["vergerName"];
@@ -223,18 +226,13 @@ class DataManipulation
                         }
                     }
 
-                    // dd("true");
                 } else {
-                    // NO RISK
-                    // dd("false");
+                    // NO RISK : do nothing
                 }
             } else{
-                // ADD LOGS (missing sensors for related station !)
-                // dd("false");
+                $this->logger->warning('The station '.$station->getStationName().' has missing sensors !');
             }
         }
-
-        // dd($alerts);
         return $alerts;
     }
 
@@ -242,6 +240,7 @@ class DataManipulation
 
 
     // TESTING FUNCTION : proposes a data array equivalent to what would be pulled from the database
+    
     public function getTestingMesures($airTemperatureName, $humectationName, $hours, $case){
         $mesures = [];
 

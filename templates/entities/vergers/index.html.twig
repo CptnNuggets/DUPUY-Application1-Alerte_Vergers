@@ -19,7 +19,7 @@
                     <th>Niveau d'alerte</th>
                     <th></th>
                     <th></th>
-                    <th>id (DEV)</th>
+                    {# <th>id (DEV)</th> #}
                 </tr>
             </thead>
             <tbody>
@@ -34,7 +34,7 @@
                     {% endif %}
                     <td><a href="{{ path('app_vergers_edit', {id : verger.id}) }}">Modifier</a></td>
                     <td><a href="{{ path('app_vergers_delete', {id : verger.id}) }}" class="link-danger">Supprimer</a></td>
-                    <td>{{ verger.id }}</td>
+                    {# <td>{{ verger.id }}</td> #}
                 </tr>
             {% endfor %}
             </tbody>
