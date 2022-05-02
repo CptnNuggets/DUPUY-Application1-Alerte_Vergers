@@ -18,31 +18,42 @@
 <div class='container' >
     <div class='row justify-content-md-center'>
     
-        {% for number, content in form_array %}
+        {% for code, content in form_array %}
         <div class='col-4 border border-secondary rounded' >          
                 {% if content.setting is defined %}
                     <div class='text-center text-muted'>
-                        <h4><strong>Capteur n°{{ number }}</strong></h4>
+                        <h4><strong>Capteur n°{{ content.numero }}</strong></h4>
+                        <br>
+                        <h6>API FieldClimate : {{ code }}</h6>
+                        <h5>{{ content.name }}</h5>
                         <br>
                         <h4>{{ content.setting.capteur.capteurName }}</h4>
                         <br>
                     </div>
                 {% elseif content.form is defined %}
                     <div class="text-center">
-                        <h4><strong>Capteur n°{{ number }}</strong></h4>
-                        <h6>API FieldClimate : {{ content.code }}</h6>
+                        <h4><strong>Capteur n°{{ content.numero }}</strong></h4>
+                        <h6>API FieldClimate : {{ code }}</h6>
                         <h5>{{ content.name }}</h5>
                     </div>
                     {{ form_start(content.form) }}
                         {{form_row(content.form.capteur)}}
                         <div class="text-center">
                             <input type="submit" value="Appliquer" class="btn btn-primary">
-                        </div>
+                        
                     {{ form_rest(content.form) }}
                     {{ form_end(content.form) }}
+                            <a href="{{ path('app_stations_addFieldClimate_dismissSensor', {id : station.id, capteurAPI : code}) }}" class="btn btn-danger">Ne pas utiliser</a> 
+                        </div>
                     <br>
                 {% else %}
-                    Woops, error !
+                    <div class="text-center">
+                        <h4><strong>Capteur n°{{ content.numero }}</strong></h4>
+                        <br>
+                        <h6>API FieldClimate : {{ code }}</h6>
+                        <h5>{{ content.name }}</h5>
+                        <br>
+                    </div>
                 {% endif %}
         </div>
         {% endfor %}

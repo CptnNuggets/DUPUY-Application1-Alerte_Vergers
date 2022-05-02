@@ -19,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\CodePointString;
 use Symfony\Component\Validator\Constraints\Length;
 
 class StationController extends AbstractController
@@ -237,6 +238,100 @@ class StationController extends AbstractController
 
 
 
+
+
+
+
+
+    // // ROUTE TO ATTRIBUTE THE SENSORS CREATED BY THE USER TO THE API CODE AND NAMES PULLED AT THE STATION CREATION
+    // // 
+    // #[Route('/stationModels/configureFieldClimate/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
+    //         name: 'app_stations_addFieldClimate_sensors')]
+    // public function configureFieldClimate(Station $station, Request $request, 
+    //     EntityManagerInterface $em, NumeroCapteurRepository $ncRepo,
+    //     AssocCapteurStationRepository $aCSRepo) : Response
+    // {
+    //     $capteurs = $station->getListeCapteurs();
+    //     $form_array=[];
+    //     $numero=0;
+    //     $allSensorsConfigured=true;
+    //     foreach ($capteurs as $capteurName => $capteurCode){
+    //         $numero++;
+    //         $form_array[$numero]['name']=$capteurName;
+    //         $form_array[$numero]['code']=$capteurCode;
+            
+    //         $numeroCapteur = $ncRepo->findOneBy(['numero' => $numero]);
+
+    //         // Checks if the sensor is allready configured
+
+    //         $existingSetting = $aCSRepo->findOneBy(['codeCapteur'=> $capteurCode,
+    //                                 'station' => $station]);
+
+    //         if ($existingSetting == null){
+    //             $allSensorsConfigured=false;
+
+    //             // form to configure the sensor
+                
+    //             $aCS = new AssocCapteurStation;
+    //             $aCS->setStation($station);
+    //             $aCS->setNumeroCapteur($numeroCapteur);
+    //             $aCS->setCodeCapteur($capteurCode);
+    //             $form = $this->createFormBuilder($aCS)
+    //                 ->add('capteur', EntityType::class, [
+    //                     'class' => Capteur::class,
+    //                     'query_builder' => function (CapteurRepository $cr) {
+    //                         return $cr->createQueryBuilder('u')
+    //                             ->orderBy('u.capteurName','ASC');
+    //                     },
+    //                     'choice_label' => 'capteurName',
+    //                     'label' => false,
+    //                     'placeholder' => 'Attribuez le capteur'
+    //                 ])
+    //                 ->getForm();
+                
+    //             $form->handleRequest($request);
+
+    //             if ($form->isSubmitted() && $form->isValid()) {
+    //                 $em->persist($aCS);
+    //                 $em->flush();
+        
+    //                 $this->addFlash('success','Capteur n°'.$numeroCapteur->getNumero().' attribué au code API '.$capteurCode.' : '.$aCS->getCapteur()->getCapteurName().'.');
+        
+    //                 return $this->redirectToRoute('app_stations_addFieldClimate_sensors', ['id' => $station->getId()]);
+    //             }
+
+    //             $form_array[$numero]['form']=$form->createView();
+    //         }
+    //         else {
+    //             // if the sensor is allready configured, it is transmitted to the view for display to the user
+
+    //             $form_array[$numero]['setting']=$existingSetting;
+    //         }
+    //     }
+    //     if ($allSensorsConfigured==true){
+    //         $this->addFlash('success', 'Tous les capteurs de la station '.$station->getStationName().' ont été configurés avec succès.');
+
+    //         return $this->redirectToRoute('app_stations_edit', ['id' => $station->getId()]);
+    //     }
+
+    //     return $this->render('entities/stations/configureFC.html.twig', [ 'form_array' => $form_array, 'station' => $station ]);
+
+    // }
+
+
+
+    // ROUTE TO ATTRIBUTE THE SENSORS CREATED BY THE USER TO THE API CODE AND NAMES PULLED AT THE STATION CREATION
+    // // 
+    // #[Route('/stationModels/configureFieldClimate/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
+    //         name: 'app_stations_addFieldClimate_sensors')]
+    // public function configureFieldClimate(Station $station, Request $request, 
+    //     EntityManagerInterface $em, NumeroCapteurRepository $ncRepo,
+    //     AssocCapteurStationRepository $aCSRepo) : Response
+    // {
+
+
+
+
     // ROUTE TO ATTRIBUTE THE SENSORS CREATED BY THE USER TO THE API CODE AND NAMES PULLED AT THE STATION CREATION
     // 
     #[Route('/stationModels/configureFieldClimate/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
@@ -249,12 +344,13 @@ class StationController extends AbstractController
         $form_array=[];
         $numero=0;
         $allSensorsConfigured=true;
+        $currentForm = true;
         foreach ($capteurs as $capteurName => $capteurCode){
             $numero++;
-            $form_array[$numero]['name']=$capteurName;
-            $form_array[$numero]['code']=$capteurCode;
+            $form_array[$capteurCode]['name']=$capteurName;
+            $form_array[$capteurCode]['numero']=$numero;
             
-            $numeroCapteur = $ncRepo->findOneBy(['numero' => $numero]);
+            
 
             // Checks if the sensor is allready configured
 
@@ -262,44 +358,52 @@ class StationController extends AbstractController
                                     'station' => $station]);
 
             if ($existingSetting == null){
+
                 $allSensorsConfigured=false;
 
-                // form to configure the sensor
-                
-                $aCS = new AssocCapteurStation;
-                $aCS->setStation($station);
-                $aCS->setNumeroCapteur($numeroCapteur);
-                $aCS->setCodeCapteur($capteurCode);
-                $form = $this->createFormBuilder($aCS)
-                    ->add('capteur', EntityType::class, [
-                        'class' => Capteur::class,
-                        'query_builder' => function (CapteurRepository $cr) {
-                            return $cr->createQueryBuilder('u')
-                                ->orderBy('u.capteurName','ASC');
-                        },
-                        'choice_label' => 'capteurName',
-                        'label' => false,
-                        'placeholder' => 'Attribuez le capteur'
-                    ])
-                    ->getForm();
-                
-                $form->handleRequest($request);
+                $numeroCapteur = $ncRepo->findOneBy(['numero' => $numero]);
 
-                if ($form->isSubmitted() && $form->isValid()) {
-                    $em->persist($aCS);
-                    $em->flush();
-        
-                    $this->addFlash('success','Capteur n°'.$numeroCapteur->getNumero().' attribué au code API '.$capteurCode.' : '.$aCS->getCapteur()->getCapteurName().'.');
-        
-                    return $this->redirectToRoute('app_stations_addFieldClimate_sensors', ['id' => $station->getId()]);
+                if ($currentForm == true){
+                    // form to configure the sensor
+                                    
+                    $aCS = new AssocCapteurStation;
+                    $aCS->setStation($station);
+                    $aCS->setNumeroCapteur($numeroCapteur);
+                    $aCS->setCodeCapteur($capteurCode);
+                    $form = $this->createFormBuilder($aCS)
+                        ->add('capteur', EntityType::class, [
+                            'class' => Capteur::class,
+                            'query_builder' => function (CapteurRepository $cr) {
+                                return $cr->createQueryBuilder('u')
+                                    ->orderBy('u.capteurName','ASC');
+                            },
+                            'choice_label' => 'capteurName',
+                            'label' => false,
+                            'placeholder' => 'Attribuez le capteur'
+                        ])
+                        ->getForm();
+
+                    $form->handleRequest($request);
+
+                    if ($form->isSubmitted() && $form->isValid()) {
+                        $em->persist($aCS);
+                        $em->flush();
+
+                        $this->addFlash('success','Capteur n°'.$numeroCapteur->getNumero().' attribué au code API '.$capteurCode.' : '.$aCS->getCapteur()->getCapteurName().'.');
+
+                        return $this->redirectToRoute('app_stations_addFieldClimate_sensors', ['id' => $station->getId()]);
+                    }
+
+                    $form_array[$capteurCode]['form']=$form->createView();
+
+                    $currentForm = false;                                                                                                       
                 }
-
-                $form_array[$numero]['form']=$form->createView();
+                
             }
             else {
                 // if the sensor is allready configured, it is transmitted to the view for display to the user
 
-                $form_array[$numero]['setting']=$existingSetting;
+                $form_array[$capteurCode]['setting']=$existingSetting;
             }
         }
         if ($allSensorsConfigured==true){
@@ -310,6 +414,36 @@ class StationController extends AbstractController
 
         return $this->render('entities/stations/configureFC.html.twig', [ 'form_array' => $form_array, 'station' => $station ]);
 
+    }
+
+
+
+    // ROUTE TO ATTRIBUTE THE SENSORS CREATED BY THE USER TO THE API CODE AND NAMES PULLED AT THE STATION CREATION
+    // 
+    #[Route('/stationModels/configureFieldClimate/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}/dismiss_sensor/{capteurAPI}', 
+            name: 'app_stations_addFieldClimate_dismissSensor')]
+    public function fieldClimateDismissSensor(Station $station, $capteurAPI, EntityManagerInterface $em) : Response
+    {
+        $sensors = $station->getListeCapteurs();
+
+        $sensorsToReturn = [];
+
+        foreach ($sensors as $sensorName => $sensorCode){
+            if ($sensorCode != $capteurAPI){
+                $sensorsToReturn[$sensorName] = $sensorCode;
+            }
+        }
+
+        $station->setListeCapteurs($sensorsToReturn);
+
+        $em->persist($station);
+        $em->flush();
+        
+        // $test = $request->query->get('capteur_code');
+
+        // dd($capteurAPI);
+
+        return $this->redirectToRoute('app_stations_addFieldClimate_sensors', ['id' => $station->getId()]);
     }
 
     

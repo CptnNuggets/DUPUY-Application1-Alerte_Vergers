@@ -367,4 +367,29 @@ class AdminController extends AbstractController
     }
 
 
+
+
+        // ROUTE TO TEST NEW FUNCTIONS
+        // 
+        #[Route('/admin/test/display_sensor_array', name: 'app_admin_test_displaySensorArray')]
+        public function adminDisplaySensorArray(DataManipulation $dataManip, MailerAlert $mailerAlert,
+            StationRepository $stationRepo, MesureRepository $mesureRepo, FieldClimateRequests $fC) : Response
+        {
+            $stationCode='0020424C';
+
+            $station = $stationRepo->findOneBy(['stationCode' => $stationCode]);
+
+            $sensors = $station->getListeCapteurs();
+
+            dd($sensors);
+
+
+            return $this->render('layouts/base.html.twig');
+
+            
+            
+
+        }
+
+
 }

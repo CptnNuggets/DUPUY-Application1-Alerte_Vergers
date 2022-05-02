@@ -47,7 +47,7 @@ class AssocCapteurStation
 
     /**
      * @ORM\ManyToOne(targetEntity=Station::class, inversedBy="assocCapteurStations")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $station;
 
@@ -133,7 +133,7 @@ class AssocCapteurStation
     {
         if (!$this->mesures->contains($mesure)) {
             $this->mesures[] = $mesure;
-            $mesure->setAssoCapteurStation($this);
+            $mesure->setAssocCapteurStation($this);
         }
 
         return $this;
@@ -143,8 +143,8 @@ class AssocCapteurStation
     {
         if ($this->mesures->removeElement($mesure)) {
             // set the owning side to null (unless already changed)
-            if ($mesure->getAssoCapteurStation() === $this) {
-                $mesure->setAssoCapteurStation(null);
+            if ($mesure->getAssocCapteurStation() === $this) {
+                $mesure->setAssocCapteurStation(null);
             }
         }
 

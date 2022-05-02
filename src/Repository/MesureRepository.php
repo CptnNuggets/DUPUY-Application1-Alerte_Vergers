@@ -23,23 +23,19 @@ class MesureRepository extends ServiceEntityRepository
         parent::__construct($registry, Mesure::class);
     }
 
-    // Selects the last $hours mesures associated to the $station
-    // and the $numeroCapteur
+    // SPECIFIC REQUEST
+        // Selects the last $hours mesures associated to the $aCS AssocCapteurStation
+
     public function findByStationAndCapteur(AssocCapteurStation $aCS, int $hours) : array
     {
-        // $stationId = $station->getId()->toBinary();
-        // $numCapteurId = $numeroCapteur->getId()->toBinary();
+            // get Assoc Capteur Station ID
         $aCSID = $aCS->getId()->toBinary();
+
+            // Query
         return $this->createQueryBuilder('m')
             ->innerJoin('m.assocCapteurStation','a')
-            // ->innerJoin('m.station','s')
-            // ->innerJoin('m.numeroCapteur','nc')
             ->andWhere('a.id = :aCSID')
-            // ->andWhere('s.id = :stationId')
-            // ->andWhere('nc.id = :numCapteurId')
             ->setParameter('aCSID', $aCSID)
-            // ->setParameter('stationId', $stationId)
-            // ->setParameter('numCapteurId', $numCapteurId)
             ->orderBy('m.dateTime', 'DESC')
             ->setMaxResults($hours)
             ->getQuery()
@@ -47,7 +43,7 @@ class MesureRepository extends ServiceEntityRepository
         ;
     }
 
-
+    // // DEPRECATED AFTER DATABASE WAS REBUILT
     // // Selects the last $hours mesures associated to the $station
     // // and the $numeroCapteur
     // public function findByStationAndCapteur(Station $station, 
