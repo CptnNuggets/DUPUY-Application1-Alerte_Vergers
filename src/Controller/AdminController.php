@@ -29,11 +29,15 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
+
+    // CONTROLLER USED DURING DEVELOPMENT FOR TESTING ROUTES AND FUNCTIONS
+        // NOT PRESENT in the CLIENT VERSION once deployed and configured
+
 class AdminController extends AbstractController
 {
 
-    // ROUTE FOR POPULATING THE "numeroCapteur" Table, AND THE "Constructeur" TABLE
-    // 
+        // ROUTE FOR POPULATING THE "numeroCapteur" Table, AND THE "Constructeur" TABLE
+            // 
     #[Route('/admin', name: 'app_admin')]
     public function adminIndex(NumeroCapteurRepository $numeroCapteurRepository,
     Request $request, EntityManagerInterface $em): Response
@@ -48,7 +52,7 @@ class AdminController extends AbstractController
             $em->persist($newnumber);
             $em->flush();
 
-            // $this->addFlash('New number added !');
+            $this->addFlash('success', 'New number added !');
 
             return $this->redirectToRoute('app_admin');
 
@@ -60,7 +64,7 @@ class AdminController extends AbstractController
             $em->persist($newConstructeur);
             $em->flush();
 
-            // $this->addFlash('New constructeur added !');
+            $this->addFlash('success', 'New constructeur added !');
 
             return $this->redirectToRoute('app_admin');
         }
@@ -71,7 +75,7 @@ class AdminController extends AbstractController
 
 
 
-    // TO REMOVE
+    
         // CREATION OF GARBAGE DATA
     #[Route('/admin/mesures', name: 'app_admin_mesures')]
     public function adminMesureGenerator(MesureRepository $mesureRepository,
@@ -95,9 +99,10 @@ class AdminController extends AbstractController
 
 
 
+    //                                  ***
     // THREE GENERIC ROUTES TO ACCESS VARIOUS INFORMATIONS ON THE FIELDCLIMATE API
-    // 
-    // 
+    //                                  ***
+    
     #[Route('/admin/pullData', name: 'app_admin_pullData')]
     public function adminPullData(FieldClimateRequests $fieldClimateRequest): Response
     {
@@ -138,8 +143,8 @@ class AdminController extends AbstractController
 
 
     
-    // ROUTE TO GET THE CONFIGURATION OF ALL FIELDCLIMATE STATIONS
-    // 
+        // ROUTE TO GET THE CONFIGURATION OF ALL FIELDCLIMATE STATIONS
+     
     #[Route('/admin/pullAllFCStationsSensors', name: 'app_admin_pullAllFCStations')]
     public function adminpullAllFCStationsSensors(FieldClimateRequests $fieldClimateRequest): Response
     {
@@ -154,26 +159,8 @@ class AdminController extends AbstractController
 
 
 
-    // USELESS AFTER REWORK OF THE DATABASE
-            // ROUTE TO OBTAIN THE TYPICAL FIELCLIMATE MODELS
-            // 
-    #[Route('/admin/fCModels', name: 'app_admin_pullFCModels')]
-    public function adminpullFCModels(FieldClimateRequests $fieldClimateRequest): Response
-    {
-        $publicKey=$this->getParameter('api_fieldclimate_public_key');
-        $privateKey=$this->getParameter('api_fieldclimate_private_key');
-        
-
-        $response=$fieldClimateRequest->pullFCModels($publicKey, $privateKey);
-
-        dd($response);
-    }
-
-
-
-
-    // ROUTE TO GET ALL THE SENSORS EXISTING ON THE FIELDCLIMATE API
-    // 
+        // ROUTE TO GET ALL THE SENSORS EXISTING ON THE FIELDCLIMATE API
+     
     #[Route('/admin/fCSensors', name: 'app_admin_pullFCSensors')]
     public function adminpullFCAllSensors(FieldClimateRequests $fieldClimateRequest): Response
     {
@@ -188,8 +175,8 @@ class AdminController extends AbstractController
 
 
 
-    // ROUTE TO CHECK THE UNICITY OF EACH FIELDCLIMATE API SENSOR CODE
-    // 
+        // ROUTE TO CHECK THE UNICITY OF EACH FIELDCLIMATE API SENSOR CODE
+     
     #[Route('/admin/fCSensorsUnicity', name: 'app_admin_checkFCSensorsUnicity')]
     public function admincheckFCSensorCodeUnicity(FieldClimateRequests $fieldClimateRequest): Response
     {
@@ -204,8 +191,8 @@ class AdminController extends AbstractController
 
 
 
-    // ROUTE TO PULL DATA FROM FIELDCLIMATE STATION BY ID AND NUMBER OF HOURS REQUESTED
-    // 
+        // ROUTE TO PULL DATA FROM FIELDCLIMATE STATION BY ID AND NUMBER OF HOURS REQUESTED
+     
     #[Route('/admin/pullFCData/{stationIdentifier<[0-9a-fA-F]{8}>}/{hours<[0-9]{1,2}>}', name: 'app_admin_pullDataFC')]
     public function adminPullFCData(FieldClimateRequests $fieldClimateRequest, string $stationIdentifier, string $hours): Response
     {
@@ -222,9 +209,9 @@ class AdminController extends AbstractController
 
 
 
-    // 
+    //              ***
     // DEV FUNCTIONS RELATED TO MESURES
-    // 
+    //              ***
 
 
     // FUNCTION USED TO STORE MESURES IN THE DATABASE
@@ -247,7 +234,7 @@ class AdminController extends AbstractController
 
 
 
-    // ROUTE TO TEST NEW FUNCTIONS
+    // ROUTE TO TEST THE AUTOSTORAGE FOR A SPECIFIC STATION
     // 
     #[Route('/admin/test/pullAndStoreMissingData', name: 'app_admin_test_pullAndStoreMissingData')]
     public function adminTestPullMissingData(DataManipulation $dataManip, MailerAlert $mailerAlert,
@@ -266,59 +253,18 @@ class AdminController extends AbstractController
     }
 
 
-    // FUNCTION TO SEND ALERT EMAILS TO CONTACT ADRESSES OF VERGERS
-    // BASED ON A CHECK OF THE LAST 12 HOURS OF DATA FROM A STATION
-    // AND A PHONY MATHS CHECK
-    // 
-    #[Route('/admin/test/math', name: 'app_admin_test_math')]
-    public function adminTestMath(DataManipulation $dataManip, MailerAlert $mailerAlert,
-        StationRepository $stationRepo) : Response
-    {
-        $stationCode='00000AB7';
-        $hours = 12;
-        
-        $result = $dataManip->getDataFromDB($stationCode, $hours);
-
-        dd($result);
-        // $vergers[] = 
-
-        // $alert = $dataManip->verifyMathsModel($result);
 
 
-        // if ($alert == true){
-        //     $station = $stationRepo->findOneBy(['stationCode' => $stationCode]);
-        //     $aSV = $station->getAssocStationVergers();
-            
-        //     foreach ($aSV as $asso) {
-        //         $contacts[] = $asso->getVerger()->getContact();
-        //     }
-        //     foreach ($contacts as $address) {
-        //         $mailerAlert->sendAlert($address);
-        //     }
-        // }
-
-        return $this->render('layouts/base.html.twig');
-
-    }
-
-
-
-
-        // ROUTE TO TEST NEW FUNCTIONS
+        // ROUTE TO TEST THE ALERT LEVELS
     // 
     #[Route('/admin/test', name: 'app_admin_test')]
     public function adminTest(DataManipulation $dataManip, MailerAlert $mailerAlert,
         StationRepository $stationRepo, MesureRepository $mesureRepo, FieldClimateRequests $fC) : Response
     {
-        // $stationCode='00000AB7';
-
-        // $fC->pullAndStoreMissingData($stationCode);
-
         $dataManip->determineActiveAlertLevels();
 
 
         return $this->render('layouts/base.html.twig');
-
 
     }
 
@@ -327,8 +273,7 @@ class AdminController extends AbstractController
     
 
     // FUNCTION TO SEND ALERT EMAILS TO CONTACT ADRESSES OF VERGERS
-        // BASED ON A CHECK OF THE LAST 12 HOURS OF DATA FROM A STATION
-        // AND A PHONY MATHS CHECK
+        // BASED ON THE LAST MESURES USING THE MATH MODEL
         // 
     #[Route('/admin/test/email', name: 'app_admin_test_email')]
     public function adminTestEmail(DataManipulation $dataManip, MailerAlert $mailerAlert,
@@ -346,22 +291,17 @@ class AdminController extends AbstractController
 
 
 
-       // ROUTE TO TEST NEW FUNCTIONS
+       // ROUTE TO TEST THE FULL AUTO STORAGE
     // 
     #[Route('/admin/debugstorage', name: 'app_admin_debugstorage')]
     public function adminDebugStorage(DataManipulation $dataManip, MailerAlert $mailerAlert,
         StationRepository $stationRepo, MesureRepository $mesureRepo, FieldClimateRequests $fC) : Response
     {
-        // $stationCode='00000AB7';
-
-        // $fC->pullAndStoreMissingData($stationCode);
-
+       
         $fC->autoStoreMissingData();
 
 
-        return $this->render('layouts/base.html.twig');
-
-        
+        return $this->render('layouts/base.html.twig');       
         
 
     }
@@ -369,7 +309,7 @@ class AdminController extends AbstractController
 
 
 
-        // ROUTE TO TEST NEW FUNCTIONS
+        // ROUTE TO EXTRACT THE SENSOR ARRAY FOR A STATION FROM THE DATABASE
         // 
         #[Route('/admin/test/display_sensor_array', name: 'app_admin_test_displaySensorArray')]
         public function adminDisplaySensorArray(DataManipulation $dataManip, MailerAlert $mailerAlert,
@@ -384,9 +324,7 @@ class AdminController extends AbstractController
             dd($sensors);
 
 
-            return $this->render('layouts/base.html.twig');
-
-            
+            return $this->render('layouts/base.html.twig');           
             
 
         }

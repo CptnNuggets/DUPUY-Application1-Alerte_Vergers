@@ -13,9 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class CapteurController extends AbstractController
 {
-    // INDEX ROUTE FOR THE SENSORS, GIVING A LIST OF ALL SENSORS EXISTING IN THE DB
-    // AND PROVIDING A FORM TO CREATE A NEW ONE
-    // 
+        // INDEX ROUTE FOR THE SENSORS, GIVING A LIST OF ALL SENSORS EXISTING IN THE DB
+            // provides a form to create a new one
+     
     #[Route('/capteurs', name: 'app_capteurs_list', methods:'GET|POST')]
     public function listCapteurs(CapteurRepository $capteurRepository,
             Request $request, EntityManagerInterface $em): Response
@@ -42,8 +42,8 @@ class CapteurController extends AbstractController
     
     
     
-    // ROUTE TO MODIFY A SENSOR
-    // 
+        // route to display the view to MODIFY a SENSOR
+     
     #[Route('/capteurs/edit/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_capteurs_edit', methods:'GET|POST')]
     public function editCapteur(EntityManagerInterface $em, Capteur $capteur, Request $request)
@@ -63,8 +63,8 @@ class CapteurController extends AbstractController
 
 
 
-    // ROUTE DE DELETE A SENSOR
-    // 
+        // route called to DELETE a SENSOR
+     
     #[Route('/capteurs/delete/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_capteurs_delete', methods:'GET|POST')]
     public function deleteCapteur(EntityManagerInterface $em, Capteur $capteur)

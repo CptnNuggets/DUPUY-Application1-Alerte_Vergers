@@ -18,8 +18,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class SettingsController extends AbstractController
 {
-    // ROUTE TO CONFIGURE THE SETTINGS OF THE APP
-    // 
+        // ROUTE TO CONFIGURE THE SETTINGS OF THE APP
+     
     #[Route('/settings', name: 'app_settings', methods:'GET|POST')]
     public function appSettings (CapteurRepository $capteurRepo, EntityManagerInterface $em,
         CapteurPourMathsRepository $cpmRepo, Request $request, MessageAlerteRepository $maRepo): Response
@@ -44,16 +44,13 @@ class SettingsController extends AbstractController
 
 
 
-
-
         //                          ***
         //  PART TO INDICATE THE SENSORS TO ADD TO THE MATH MODEL
         //                          ***
 
-
+            // Official names displayed, to which the sensors need to be attributed
         $capteursEnDur["tempAir"]["name"] = "Température de l'air";
         $capteursEnDur["humec"]["name"] = "Humectation";
-        // $capteursEnDur["test"]["name"] = "Un super test";
 
         foreach ($capteursEnDur as $shortName => $array) {
                 $existingCapteur = $cpmRepo->findOneBy(['nomRaccourci' => $shortName]);
@@ -85,9 +82,6 @@ class SettingsController extends AbstractController
                     return $this->redirectToRoute('app_settings');
                 }
                 
-
-
-
                 $capteursEnDur[$shortName]["form"]=$form->createView();
 
             }
@@ -95,15 +89,9 @@ class SettingsController extends AbstractController
             {
                 $capteursEnDur[$shortName]["capteur"]=$existingCapteur;
                 
-
-
             }
         }
-        // dd($capteursEnDur);
 
-
-
-        
 
         //               ***
         //  PART TO CREATE THE DISPLAY TABLE
@@ -113,11 +101,11 @@ class SettingsController extends AbstractController
 
         return $this->render('settings/settings.html.twig', ['form_array' => $capteursEnDur, 'alert_form' => $alertForm->createView(), 'alert_messages' => $alerteMessages]);
 
-
     }
 
 
 
+        // route called to REMOVE a CAPTEUR POUR MATHS entity
 
     #[Route('/settings/deleteCPM/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', name: 'app_settings_deleteCPM', methods:'GET|POST')]
     public function appSettingsDeleteCPM (EntityManagerInterface $em, CapteurPourMaths $capteurPourMath): Response
@@ -130,6 +118,8 @@ class SettingsController extends AbstractController
         return $this->redirectToRoute('app_settings');
     }
 
+
+        // route called to REMOVE a configured ALERT LEVEL
 
     #[Route('/settings/deleteAlert/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', name: 'app_settings_deleteAlert', methods:'GET|POST')]
     public function appSettingsDeleteAlert (EntityManagerInterface $em, MessageAlerte $messageAlerte): Response

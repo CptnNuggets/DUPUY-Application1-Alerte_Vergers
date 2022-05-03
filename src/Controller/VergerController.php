@@ -13,8 +13,9 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class VergerController extends AbstractController
 {
-                // INDEX ROUTE FOR THE VERGERS
-            //  
+        // INDEX ROUTE FOR THE VERGERS
+            //  displays a list and a form allowing to create a new one
+
     #[Route('/vergers', name: 'app_vergers_list', methods:'GET|POST')]
     public function listVergers(VergerRepository $vergerRepository,
             Request $request, EntityManagerInterface $em): Response
@@ -32,14 +33,16 @@ class VergerController extends AbstractController
             $this->addFlash('success','Verger créé !');
 
             return $this->redirectToRoute('app_vergers_list');
-
         }
 
         return $this->render('entities/vergers/index.html.twig', [ 'vergers' => $vergers , 'form' => $form->createView()]);
     }
 
-            // FORM TO MODIFY VERGERS
-            // 
+
+
+        // route to MODIFY a VERGER
+            // contains a form loading the existing data and allowing an update
+
     #[Route('/vergers/edit/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_vergers_edit', methods:'GET|POST')]
     public function editVerger(EntityManagerInterface $em, Verger $verger, Request $request)
@@ -57,9 +60,12 @@ class VergerController extends AbstractController
         return $this->render('entities\vergers\edit.html.twig', ['verger'=>$verger, 'form'=>$form->createView()]);
     }
 
+
+    
     // TO ULTIMATELY DELETE : 
-            // ROUTE TO DELETE A VERGER
-            // 
+        // ROUTE TO DELETE A VERGER
+            // called from the list in the index view
+
     #[Route('/vergers/delete/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_vergers_delete', methods:'GET|POST')]
     public function deleteVeger(EntityManagerInterface $em, Verger $verger)

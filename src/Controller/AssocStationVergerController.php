@@ -14,10 +14,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class AssocStationVergerController extends AbstractController
 {
 
-    // ROUTE INDEX TO ULTIMATELY RENAME AS APP_ASSOCSV_LIST
+    // route RENAMED as APP_ASSOCSV_LIST in the CLIENT VERSION
     // 
         // INDEX ROUTE FOR STATION-VERGER ASSOCIATIONS DISPLAY
-        // 
+            // Displays a list of existing associations and a form to create a new one
+
     #[Route('/', name: 'app_home', methods:'GET|POST')]
     public function index(AssocStationVergerRepository $assocStaVerRepo,
             Request $request, EntityManagerInterface $em): Response
@@ -44,8 +45,8 @@ class AssocStationVergerController extends AbstractController
 
 
 
-    // ROUTE TO DELETE A STATION-VERGER ASSOCIATION
-    // 
+        // route called to DELETE a STATION-VERGER ASSOCIATION
+     
     #[Route('/assocSV/delete/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_assocSV_delete', methods:'GET|POST')]
     public function deleteAssocSV(EntityManagerInterface $em, AssocStationVerger $association)

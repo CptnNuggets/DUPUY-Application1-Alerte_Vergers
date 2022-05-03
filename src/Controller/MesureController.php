@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class MesureController extends AbstractController
 {
-    // INDEX ROUTE OFFERING THE POSSIBILITY TO CHOOSE A STATION AND DISPLAY ITS MESURES
-    // 
+        // INDEX ROUTE OFFERING THE POSSIBILITY TO CHOOSE A STATION AND DISPLAY ITS MESURES
+     
     #[Route('/mesures', name: 'app_mesures_home')]
     public function selectStationForMesures(Request $request, EntityManagerInterface $em): Response
     {
@@ -36,14 +36,15 @@ class MesureController extends AbstractController
 
 
     // ROUTE TO DISPLAY THE MESURES FOR A GIVEN STATION 
-    // RENDER AN ARRAY WITH MESURES ORGANISED BY SENSOR AND TIME/DATE
-    // 
+        // renders an array displaying the mesures with table head = sensors and line head = dateTime
+     
     #[Route('/mesures/station/{id<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}', 
         name: 'app_mesures_station', methods:'GET|POST')]
 
     public function listMesuresByStation (MesureRepository $mesRepo, AssocCapteurStationRepository $aCSRepo,
         Request $request, EntityManagerInterface $em, Station $station): Response
     {
+            // form to change the station displayed
         $form = $this->createForm(ChooseStationType::class);
         $form->handleRequest($request);
 
@@ -51,46 +52,29 @@ class MesureController extends AbstractController
             $stationToRedirect = $form->getData()['station'];
             
             return $this->redirectToRoute('app_mesures_station', ['id' => $stationToRedirect->getId()]);
-        }
-                
-        // $mesures = $mesRepo->findBy(['station' => $station],['dateTime' => 'DESC']);
-
-        // $associations = $aCSRepo ->findBy(['station' => $station]);
-        // $listCapteurs=[];
-        // foreach ($associations as $asso){
-        //     $capteur = $asso->getCapteur();
-        //     $numero = $asso->getNumeroCapteur()->getNumero();
-        //     $listCapteurs[$numero]=$capteur;
-        // }
-        // ksort($listCapteurs);
-
-        // $dataSortedByDate = [];
-        // foreach ($mesures as $mesure){
-        //     $dateTimeAsString = $mesure->getDateTime()->format('Y-m-d H:i:s');
-        //     $dataSortedByDate[$dateTimeAsString][$mesure->getAssoCapteurStation()->getNumeroCapteur()->getNumero()]=$mesure->getValeur();
-        // }
-
-        
-
+        }  
+            // gets the AssocCapteurStation for that station
         $associations = $aCSRepo ->findBy(['station' => $station]);
 
-        
+            // Arrays to be filled
         $listCapteurs=[];
         $dataSortedByDate = [];
+            // parses the AssocCapteurStations 
         foreach ($associations as $asso){
 
             $capteur = $asso->getCapteur();
             $numero = $asso->getNumeroCapteur()->getNumero();
+                // associates a number and a sensor
             $listCapteurs[$numero]=$capteur;
-
+                // get the relevant mesures
             $mesures = $mesRepo->findBy(['assocCapteurStation' => $asso],['dateTime' => 'DESC']);
-            
-            // dd($mesures);
+                // fills the mesure array with, for each dateTime, a [sensor number => value] association
             foreach ($mesures as $mesure){
                 $dateTimeAsString = $mesure->getDateTime()->format('Y-m-d H:i:s');
                 $dataSortedByDate[$dateTimeAsString][$numero]=$mesure->getValeur();
             }
         }
+            // sorts the sensor array by sensor number
         ksort($listCapteurs);     
 
 
@@ -99,8 +83,9 @@ class MesureController extends AbstractController
 
 
 
-    // ROUTE TO DELETE A LINE OF MESURES FROM A STATION GIVEN A DATETIME
-    // 
+        // route to DELETE A LINE OF MESURES from a STATION given a DATETIME
+            // NOT PRESENT ANYMORE in the CLIENT VERSION
+     
     #[Route('/mesures/delete/{stationId<[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}>}/{dateTime<[0-9]{4}\-[0-9]{2}\-[0-9]{2}\ [0-9]{2}\:[0-9]{2}\:[0-9]{2}>}', name: 'app_mesures_delete')]
     public function deleteMesures($stationId, $dateTime, EntityManagerInterface $em, 
         MesureRepository $mesureRepo, StationRepository $stationRepo, AssocCapteurStationRepository $aCSRepo)
