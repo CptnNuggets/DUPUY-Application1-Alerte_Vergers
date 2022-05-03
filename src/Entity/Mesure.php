@@ -47,6 +47,7 @@ class Mesure
 
     /**
      * @ORM\ManyToOne(targetEntity=AssocCapteurStation::class, inversedBy="mesures")
+     * @ORM\JoinColumn(onDelete="CASCADE")
      */
     private $assocCapteurStation;
 
