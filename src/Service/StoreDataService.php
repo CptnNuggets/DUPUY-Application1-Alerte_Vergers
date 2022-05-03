@@ -75,9 +75,12 @@ class StoreDataService
         $lastHour=null;
         $lastHourDB=null;
         foreach ($associations as $asso) {
-            $lastHourDB = $this->mesureRepo->findOneBy(['assocCapteurStation' => $asso],['dateTime' => 'DESC'])->getDateTime();
-            if ($lastHourDB > $lastHour){
-                $lastHour = $lastHourDB;
+            $mesure = $this->mesureRepo->findOneBy(['assocCapteurStation' => $asso],['dateTime' => 'DESC']);
+            if ($mesure != null){
+                $lastHourDB = $mesure->getDateTime();
+                if ($lastHourDB > $lastHour){
+                    $lastHour = $lastHourDB;
+                }
             }
         }
         return $lastHourDB;
